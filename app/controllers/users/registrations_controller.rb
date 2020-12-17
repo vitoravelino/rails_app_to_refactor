@@ -7,7 +7,6 @@ class Users::RegistrationsController < ApplicationController
       on.failure(:invalid_user) { |data| render_422(data[:user]) }
       on.failure(:invalid_params) { |data| render_422(data[:errors]) }
       on.failure(:wrong_passwords) { |data| render_422(data[:user]) }
-      on.failure(:parameter_missing) { |data|  }
     end
   rescue ActionController::ParameterMissing => exception
     render_json(400, error: exception.message)

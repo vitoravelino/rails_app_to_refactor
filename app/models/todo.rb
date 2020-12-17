@@ -31,8 +31,4 @@ class Todo < ApplicationRecord
 
     'uncompleted'
   end
-
-  def serialize_as_json
-    as_json(except: [:user_id], methods: :status)
-  end
 end

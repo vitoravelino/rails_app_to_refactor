@@ -1,4 +1,4 @@
-class SerializeTodo < Micro::Case
+class Todos::SerializeAsJson < Micro::Case
   attribute :todo
 
   def call!
