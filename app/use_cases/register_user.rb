@@ -1,10 +1,12 @@
-class RegisterUserUseCase < Micro::Case
-  attribute :params
+class RegisterUser < Micro::Case
+  attribute :name
+  attribute :email
+  attribute :password, default: -> value { value.to_s.strip }
+  attribute :password_confirmation, default: -> value { value.to_s.strip }
 
   def call!
     transaction {
-      fetch_user_params
-        .then(method(:validate_password_params))
+      validate_password_params
         .then(method(:compare_passwords))
         .then(method(:create_user))
     }
@@ -14,19 +16,7 @@ class RegisterUserUseCase < Micro::Case
 
   private
 
-    def fetch_user_params
-      user_params = params.require(:user).permit(:name, :email, :password, :password_confirmation)
-
-      Success result: user_params.to_h.symbolize_keys
-
-    rescue ActionController::ParameterMissing => exception
-      Failure :parameter_missing, result: { message: exception.message }
-    end
-
-    def validate_password_params(**user_params)
-      password = user_params[:password].to_s.strip
-      password_confirmation = user_params[:password_confirmation].to_s.strip
-
+    def validate_password_params
       errors = {}
       errors[:password] = ["can't be blank"] if password.blank?
       errors[:password_confirmation] = ["can't be blank"] if password_confirmation.blank?
