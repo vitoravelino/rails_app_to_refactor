@@ -5,9 +5,7 @@ class TodosController < ApplicationController
 
   before_action :set_todo, only: %i[show destroy update complete uncomplete]
 
-  rescue_from ActiveRecord::RecordNotFound do
-    render_json(404, todo: { id: 'not found' })
-  end
+  rescue_from ActiveRecord::RecordNotFound, with: :render_404
 
   def index
     todos =
@@ -34,7 +32,11 @@ class TodosController < ApplicationController
   end
 
   def show
-    render_json(200, todo: @todo.serialize_as_json)
+    FindTodo
+      .call(todo_id: params[:id])
+      .then(SerializeTodo)
+      .on_success { |result| render_todo_as_json(result) }
+      .on_failure(:todo_not_found) { render_404 }
   end
 
   def destroy
@@ -54,15 +56,19 @@ class TodosController < ApplicationController
   end
 
   def complete
-    @todo.complete!
-
-    render_json(200, todo: @todo.serialize_as_json)
+    CompleteTodo
+      .call(todo_id: params[:id])
+      .then(SerializeTodo)
+      .on_success { |result| render_todo_as_json(result) }
+      .on_failure(:todo_not_found) { render_404 }
   end
 
   def uncomplete
-    @todo.uncomplete!
-
-    render_json(200, todo: @todo.serialize_as_json)
+    UncompleteTodo
+      .call(todo_id: params[:id])
+      .then(SerializeTodo)
+      .on_success { |result| render_todo_as_json(result) }
+      .on_failure(:todo_not_found) { render_404 }
   end
 
   private
@@ -73,5 +79,13 @@ class TodosController < ApplicationController
 
     def set_todo
       @todo = current_user.todos.find(params[:id])
+    end
+
+    def render_404
+      render_json(404, todo: { id: 'not found' })
+    end
+
+    def render_todo_as_json(result)
+      render_json(200, todo: result[:todo_as_json])
     end
 end
