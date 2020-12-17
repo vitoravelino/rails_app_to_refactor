@@ -1,9 +1,10 @@
 module Todos
   class Find < Micro::Case
+    attribute :user
     attribute :todo_id
 
     def call!
-      todo = Todo.find_by(id: todo_id)
+      todo = user.todos.find_by(id: todo_id)
 
       if todo
         Success result: { todo: todo }

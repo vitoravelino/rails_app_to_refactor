@@ -3,7 +3,7 @@
 class TodosController < ApplicationController
   before_action :authenticate_user
 
-  before_action :set_todo, only: %i[show destroy update complete uncomplete]
+  before_action :set_todo, only: %i[destroy update]
 
   rescue_from ActiveRecord::RecordNotFound, with: :render_404
 
@@ -38,7 +38,7 @@ class TodosController < ApplicationController
 
   def show
     Todos::Find
-      .call(todo_id: params[:id])
+      .call(todo_id: params[:id], user: current_user)
       .then(Todos::SerializeAsJson)
       .on_success { |result| render_todo_as_json(result) }
       .on_failure(:todo_not_found) { render_404 }
@@ -62,7 +62,7 @@ class TodosController < ApplicationController
 
   def complete
     Todos::Complete
-      .call(todo_id: params[:id])
+      .call(todo_id: params[:id], user: current_user)
       .then(Todos::SerializeAsJson)
       .on_success { |result| render_todo_as_json(result) }
       .on_failure(:todo_not_found) { render_404 }
@@ -70,7 +70,7 @@ class TodosController < ApplicationController
 
   def uncomplete
     Todos::Uncomplete
-      .call(todo_id: params[:id])
+      .call(todo_id: params[:id], user: current_user)
       .then(Todos::SerializeAsJson)
       .on_success { |result| render_todo_as_json(result) }
       .on_failure(:todo_not_found) { render_404 }
