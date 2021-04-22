@@ -38,7 +38,9 @@ class TodosService
   def complete_todo(user:, params:)
     todo = find_todo(user: user, params: params)
 
-    todo.complete!
+    todo.completed_at = Time.current unless todo.completed?
+
+    todo.save if todo.completed_at_changed?
 
     todo
   end
@@ -46,7 +48,9 @@ class TodosService
   def uncomplete_todo(user:, params:)
     todo = find_todo(user: user, params: params)
 
-    todo.uncomplete!
+    todo.completed_at = nil unless todo.uncompleted?
+
+    todo.save if todo.completed_at_changed?
 
     todo
   end

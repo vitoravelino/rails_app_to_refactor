@@ -32,26 +32,6 @@ class Todo < ApplicationRecord
     'uncompleted'
   end
 
-  def complete
-    self.completed_at = Time.current unless completed?
-  end
-
-  def complete!
-    complete
-
-    self.save if completed_at_changed?
-  end
-
-  def uncomplete
-    self.completed_at = nil unless uncompleted?
-  end
-
-  def uncomplete!
-    uncomplete
-
-    self.save if completed_at_changed?
-  end
-
   def serialize_as_json
     as_json(except: [:user_id], methods: :status)
   end
