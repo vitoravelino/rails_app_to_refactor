@@ -13,13 +13,11 @@ class UsersService
 
     return failure(password_validation.errors) if password_validation.errors?
 
-    password_digest = Digest::SHA256.hexdigest(password.value)
-
     user = User.new(
       name: user_params[:name],
       email: user_params[:email],
       token: SecureRandom.uuid,
-      password_digest: password_digest
+      password_digest: password.digest
     )
 
     if user.save
