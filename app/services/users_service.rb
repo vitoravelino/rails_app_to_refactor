@@ -13,17 +13,18 @@ class UsersService
 
     return failure(password_validation.errors) if password_validation.errors?
 
-    user = User.new(
+    user_registering = User::Registering.new(
       name: user_params[:name],
       email: user_params[:email],
-      token: SecureRandom.uuid,
-      password_digest: password.digest
+      password: password
     )
 
-    if user.save
-      success(user.as_json(only: [:id, :name, :token]))
+    if user_registering.persist
+      user_as_json = user_registering.user.as_json(only: [:id, :name, :token])
+
+      success(user_as_json)
     else
-      failure(user.errors.as_json)
+      failure(user_registering.errors.as_json)
     end
   end
 
