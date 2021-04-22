@@ -6,20 +6,20 @@ class UsersService
 
     user_params = params.require(:user).permit(:name, :email, :password, :password_confirmation)
 
-    password = user_params[:password].to_s.strip
-    password_confirmation = user_params[:password_confirmation].to_s.strip
+    password = User::Password.new(user_params[:password])
+    password_confirmation = User::Password.new(user_params[:password_confirmation])
 
     errors = {}
-    errors[:password] = ["can't be blank"] if password.blank?
-    errors[:password_confirmation] = ["can't be blank"] if password_confirmation.blank?
+    errors[:password] = ["can't be blank"] if password.invalid?
+    errors[:password_confirmation] = ["can't be blank"] if password_confirmation.invalid?
 
     if errors.present?
       [false, errors]
     else
-      if password != password_confirmation
+      if !(password == password_confirmation)
         [false, { password_confirmation: ["doesn't match password"] }]
       else
-        password_digest = Digest::SHA256.hexdigest(password)
+        password_digest = Digest::SHA256.hexdigest(password.value)
 
         user = User.new(
           name: user_params[:name],
