@@ -21,4 +21,8 @@ class User::Password::Validation
 
     true
   end
+
+  def digest
+    Digest::SHA256.hexdigest(password.value)
+  end
 end

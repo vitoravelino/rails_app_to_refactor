@@ -2,10 +2,16 @@
 
 class Users::RegistrationsController < ApplicationController
   def create
-    succeed, user = UsersService.register_user(params: params)
+    user_params = params.require(:user).permit(:name, :email, :password, :password_confirmation)
 
-    status = succeed ? 201 : 422
+    user_registering = User::Registering.new(user_params)
 
-    render_json(status, user: user)
+    if user_registering.perform
+      user = user_registering.user
+
+      render_json(201, user: user.as_json(only: [:id, :name, :token]))
+    else
+      render_json(422, user: user_registering.errors)
+    end
   end
 end

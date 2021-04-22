@@ -3,26 +3,34 @@
 class User::Registering
   attr_reader :user
 
-  def initialize(name:, email:, password:)
-    @user = build_user(name, email, password)
+  def initialize(input)
+    password = User::Password.new(input[:password])
+    password_confirmation = User::Password.new(input[:password_confirmation])
+
+    @name = input[:name]
+    @email = input[:email]
+    @password_validation = User::Password::Validation.new(password, password_confirmation)
   end
 
-  def persist
-    @user.save
+  def user
+    @user ||= User.new(
+      name: @name,
+      email: @email,
+      token: SecureRandom.uuid,
+      password_digest: @password_validation.digest
+    )
   end
 
   def errors
-    @user.errors
+    @errors ||=
+      if @password_validation.errors?
+        @password_validation.errors
+      else
+        user.valid? ? {} : user.errors.as_json
+      end
   end
 
-  private
-
-    def build_user(name, email, password)
-      User.new(
-        name: name,
-        email: email,
-        token: SecureRandom.uuid,
-        password_digest: password.digest
-      )
-    end
+  def perform
+    errors.present? ? false : user.save
+  end
 end

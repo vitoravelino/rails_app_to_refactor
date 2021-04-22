@@ -14,8 +14,4 @@ class User::Password
   def ==(password)
     self.value == password.value
   end
-
-  def digest
-    Digest::SHA256.hexdigest(value)
-  end
 end
