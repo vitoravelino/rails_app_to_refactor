@@ -32,7 +32,11 @@ class User
     end
 
     def perform
-      errors.present? ? false : user.save
+      return false unless errors.blank? && user.save
+
+      UserMailer.with(user: user).welcome.deliver_later
+
+      true
     end
   end
 end
