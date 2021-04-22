@@ -9,31 +9,31 @@ class UsersService
     password = User::Password.new(user_params[:password])
     password_confirmation = User::Password.new(user_params[:password_confirmation])
 
-    errors = {}
-    errors[:password] = ["can't be blank"] if password.invalid?
-    errors[:password_confirmation] = ["can't be blank"] if password_confirmation.invalid?
+    password_validation = User::Password::Validation.new(password, password_confirmation)
 
-    if errors.present?
-      [false, errors]
+    return failure(password_validation.errors) if password_validation.errors?
+
+    password_digest = Digest::SHA256.hexdigest(password.value)
+
+    user = User.new(
+      name: user_params[:name],
+      email: user_params[:email],
+      token: SecureRandom.uuid,
+      password_digest: password_digest
+    )
+
+    if user.save
+      success(user.as_json(only: [:id, :name, :token]))
     else
-      if !(password == password_confirmation)
-        [false, { password_confirmation: ["doesn't match password"] }]
-      else
-        password_digest = Digest::SHA256.hexdigest(password.value)
-
-        user = User.new(
-          name: user_params[:name],
-          email: user_params[:email],
-          token: SecureRandom.uuid,
-          password_digest: password_digest
-        )
-
-        if user.save
-          [true, user.as_json(only: [:id, :name, :token])]
-        else
-          [false, user.errors.as_json]
-        end
-      end
+      failure(user.errors.as_json)
     end
+  end
+
+  def self.failure(value)
+    [false, value]
+  end
+
+  def self.success(value)
+    [true, value]
   end
 end
