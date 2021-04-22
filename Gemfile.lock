@@ -93,6 +93,7 @@ GEM
     i18n (1.8.5)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
+    kind (5.5.0)
     kwalify (0.7.2)
     launchy (2.5.0)
       addressable (~> 2.7)
@@ -206,6 +207,11 @@ GEM
     tty-which (0.4.2)
     tzinfo (1.2.8)
       thread_safe (~> 0.1)
+    u-attributes (2.7.0)
+      kind (>= 4.0, < 6.0)
+    u-case (4.3.0)
+      kind (>= 4.0, < 6.0)
+      u-attributes (>= 2.7, < 3.0)
     virtus (1.0.5)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
@@ -233,6 +239,7 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.0.0)
   sqlite3 (~> 1.4)
   tzinfo-data
+  u-case (~> 4.3)
 
 RUBY VERSION
    ruby 2.7.2p137
