@@ -4,14 +4,14 @@ class Users::RegistrationsController < ApplicationController
   def create
     user_params = params.require(:user).permit(:name, :email, :password, :password_confirmation)
 
-    user_registering = User::Registering.new(user_params)
+    registration = User::Registration.new(user_params)
 
-    if user_registering.perform
-      user = user_registering.user
+    if registration.perform
+      user = registration.user
 
       render_json(201, user: user.as_json(only: [:id, :name, :token]))
     else
-      render_json(422, user: user_registering.errors)
+      render_json(422, user: registration.errors)
     end
   end
 end
