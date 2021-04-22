@@ -8,13 +8,13 @@ class TodosController < ApplicationController
   end
 
   def index
-    json = todos_service.list_all(user: current_user, params: params)
+    json = todos_service.list_all
 
     render_json(200, todos: json)
   end
 
   def create
-    todo = todos_service.create_todo(user: current_user, params: params)
+    todo = todos_service.create_todo
 
     if todo.valid?
       render_json(201, todo: todo.serialize_as_json)
@@ -24,19 +24,19 @@ class TodosController < ApplicationController
   end
 
   def show
-    todo = todos_service.find_todo(user: current_user, params: params)
+    todo = todos_service.find_todo
 
     render_json(200, todo: todo.serialize_as_json)
   end
 
   def destroy
-    todo = todos_service.destroy_todo(user: current_user, params: params)
+    todo = todos_service.destroy_todo
 
     render_json(200, todo: todo.serialize_as_json)
   end
 
   def update
-    todo = todos_service.update_todo(user: current_user, params: params)
+    todo = todos_service.update_todo
 
     if todo.valid?
       render_json(200, todo: todo.serialize_as_json)
@@ -46,13 +46,13 @@ class TodosController < ApplicationController
   end
 
   def complete
-    todo = todos_service.complete_todo(user: current_user, params: params)
+    todo = todos_service.complete_todo
 
     render_json(200, todo: todo.serialize_as_json)
   end
 
   def uncomplete
-    todo = todos_service.uncomplete_todo(user: current_user, params: params)
+    todo = todos_service.uncomplete_todo
 
     render_json(200, todo: todo.serialize_as_json)
   end
@@ -60,6 +60,6 @@ class TodosController < ApplicationController
   private
 
     def todos_service
-      TodosService.new
+      TodosService.new(user: current_user, params: params)
     end
 end
