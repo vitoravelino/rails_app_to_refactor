@@ -2,11 +2,13 @@
 
 module User::Register
   class Flow < Micro::Case
-    flow([
-      Step::NormalizeAttributes,
-      Step::ValidateAttributes,
-      Step::CreateRecord,
-      Step::SerializeAsJson
-    ])
+    def call!
+      transaction {
+        call(Step::NormalizeAttributes)
+          .then(Step::ValidateAttributes)
+          .then(Step::CreateRecord)
+      }
+      .then(Step::SerializeAsJson)
+    end
   end
 end
