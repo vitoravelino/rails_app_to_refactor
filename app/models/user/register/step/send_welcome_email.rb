@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 class User::Register::Step::SendWelcomeEmail < Micro::Case
-  attributes :user
+  attribute :user
+  attribute :mailer
 
   def call!
-    ::UserMailer.with(user: user).welcome.deliver_later
+    mailer.with(user: user).welcome.deliver_later
 
     Success(:email_sent)
   end
