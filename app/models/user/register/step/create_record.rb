@@ -4,7 +4,7 @@ class User::Register::Step::CreateRecord < Micro::Case
   attributes :name, :email, :password
 
   def call!
-    password_digest = Digest::SHA256.hexdigest(password)
+    password_digest = Digest::SHA256.hexdigest(password || '')
 
     user = User.new(
       name: name,
