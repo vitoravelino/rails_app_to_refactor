@@ -8,6 +8,7 @@ module User::Register
           .then(Step::ValidateAttributes)
           .then(Step::CreateRecord)
       }
+      .then(Step::SendWelcomeEmail)
       .then(Step::SerializeAsJson)
     end
   end
